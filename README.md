@@ -1,70 +1,41 @@
 Flask-HTTPAuth
 ==============
 
-[![Build Status](https://travis-ci.org/miguelgrinberg/Flask-HTTPAuth.png?branch=master)](https://travis-ci.org/miguelgrinberg/Flask-HTTPAuth)
-
 Simple extension that provides Basic and Digest HTTP authentication for Flask routes.
 
 Basic authentication example
 ----------------------------
 
-    from flask import Flask
+    from flask import Flask, g
     from flask_httpauth import HTTPBasicAuth
     
     app = Flask(__name__)
-    auth = HTTPBasicAuth()
+    auth = HTTPTokenAuth()
     
     users = {
         "john": "hello",
         "susan": "bye"
     }
     
-    @auth.get_password
-    def get_pw(username):
-        if username in users:
-            return users.get(username)
-        return None
+    @verify_token
+    def verify_token(token):
+        user = User.get_token(verify_token)
+        if user
+            g.current_user = user
+            return True
+        return False
     
     @app.route('/')
     @auth.login_required
     def index():
-        return "Hello, %s!" % auth.username()
+        return "Hello, %s!" % g.current_user.username()
         
     if __name__ == '__main__':
         app.run()
         
-Note: See the [documentation](http://pythonhosted.org/Flask-HTTPAuth) for more complex examples that involve password hashing and custom verification callbacks.
+Fork From: [documentation](http://pythonhosted.org/Flask-HTTPAuth) for more complex examples that involve password hashing and custom verification callbacks.
 
-Digest authentication example
------------------------------
 
-    from flask import Flask
-    from flask_httpauth import HTTPDigestAuth
-    
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'secret key here'
-    auth = HTTPDigestAuth()
-    
-    users = {
-        "john": "hello",
-        "susan": "bye"
-    }
-    
-    @auth.get_password
-    def get_pw(username):
-        if username in users:
-            return users.get(username)
-        return None
-        
-    @app.route('/')
-    @auth.login_required
-    def index():
-        return "Hello, %s!" % auth.username()
-        
-    if __name__ == '__main__':
-        app.run()
-
-Resources
 ---------
 
 - [Documentation](http://pythonhosted.org/Flask-HTTPAuth)
